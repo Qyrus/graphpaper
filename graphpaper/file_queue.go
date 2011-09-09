@@ -9,14 +9,14 @@ import (
 // todo: better name please!
 // todo: in the process of renaming, reconsider the interface between collectd and this queue
 type NodeMetricMeasurement struct {
-  Node string
+  Node   string
   Metric string // todo: should be a type in itself?
   Measurement
 }
 
 type NodeMetricMeasurementChannel chan NodeMetricMeasurement
 
-func (m *NodeMetricMeasurement) filename() (string) {
+func (m *NodeMetricMeasurement) filename() string {
   // todo: sanity check node name and metric name before using them in the filesystem
   seconds := m.NanoTime / 1000000000
   fmt.Println(seconds, m.NanoTime)
@@ -28,10 +28,10 @@ func (m *NodeMetricMeasurement) filename() (string) {
 // need to be written to disk.
 // todo: should filequeue take filename / measurements pairs?
 type fileQueue struct {
-  data map[string] []Measurement
-  queue []string
+  data    map[string][]Measurement
+  queue   []string
   waiting chan bool
-  size int
+  size    int
 }
 
 // newFileQueue creates and initializes a new FileQueue. If data is waiting to
@@ -39,7 +39,7 @@ type fileQueue struct {
 func newFileQueue(waiting chan bool) *fileQueue {
   q := new(fileQueue)
   // todo: simplify this
-  q.data = make(map[string] []Measurement)
+  q.data = make(map[string][]Measurement)
   q.queue = make([]string, 0)
   q.waiting = waiting
   return q
@@ -58,7 +58,7 @@ func (q *fileQueue) push(m NodeMetricMeasurement) {
   // todo: queue should check and store types too
   filename := m.filename()
   _, exists := q.data[filename]
-  q.size ++
+  q.size++
   if exists {
     q.data[filename] = append(q.data[filename], m.Measurement)
   } else {
@@ -84,7 +84,7 @@ func (q *fileQueue) shift() (string, []Measurement) {
 }
 
 func writeMeasurement(filename string, l []Measurement) {
-  if(len(l) > 0){
+  if len(l) > 0 {
     first := l[0]
     valueType := first.Value.Type()
     fmt.Println("opening", valueType, filename)
@@ -105,12 +105,11 @@ func FileWriter(c NodeMetricMeasurementChannel) {
   queue := newFileQueue(waiting)
   for {
     select {
-    case m := <- c:
+    case m := <-c:
       queue.push(m)
-    case <- waiting:
+    case <-waiting:
       filename, l := queue.shift()
       writeMeasurement(filename, l)
     }
   }
 }
-//*/

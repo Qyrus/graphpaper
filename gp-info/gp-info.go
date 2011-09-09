@@ -18,7 +18,7 @@ func main() {
     fmt.Printf("Type:        raw\n")
   } else {
     fmt.Printf("Type:        summary\n")
-    fmt.Printf("Resolution:  %ds\n", f.Resolution / 1000000000)
+    fmt.Printf("Resolution:  %ds\n", f.Resolution/1000000000)
     fmt.Printf("Start Time:  %s\n", graphpaper.FormatTimeLocal(f.StartTime))
   }
   fmt.Printf("Metric Type: %v\n", f.ValueType)

@@ -1,6 +1,6 @@
 package graphpaper
 
-import(
+import (
   "encoding/binary"
   "bytes"
   "io"
@@ -8,35 +8,35 @@ import(
   "fmt"
 )
 
-type Value interface{
+type Value interface {
   Bytes() []byte
   Type() valueType
   Float64Value() float64Value
 }
 
 const (
-  uint64Type = 1
-  int64Type = 2
+  uint64Type  = 1
+  int64Type   = 2
   float64Type = 3
 )
 
 type valueType int32
 
-func (t valueType) String() (string) {
+func (t valueType) String() string {
   switch t {
-    case uint64Type:
-      return "uint64"
-    case int64Type:
-      return "int64"
-    case float64Type:
-      return "float64"
+  case uint64Type:
+    return "uint64"
+  case int64Type:
+    return "int64"
+  case float64Type:
+    return "float64"
   }
   return fmt.Sprintf("unexpected type (%d)", t)
 }
 
 func ReadValue(t valueType, f io.Reader) (v Value, err os.Error) {
   switch t {
-  case uint64Type: 
+  case uint64Type:
     var u64 uint64Value
     err = binary.Read(f, binary.BigEndian, &u64)
     return u64, err
@@ -54,22 +54,22 @@ func ReadValue(t valueType, f io.Reader) (v Value, err os.Error) {
 
 type collectdValue struct {
   collectdType uint8
-  bytes []byte
+  bytes        []byte
 }
 
-func (v collectdValue) Float64Value() (float64Value) {
+func (v collectdValue) Float64Value() float64Value {
   b := bytes.NewBuffer(v.Bytes())
   f, err := ReadValue(v.Type(), b)
   if err != nil { fmt.Println("Failed read value", err); os.Exit(1); }
   return f.Float64Value()
 }
 
-func (v collectdValue) Bytes() ([]byte) {
+func (v collectdValue) Bytes() []byte {
   b := v.bytes
   // float is little endian in collectd (why!?) and needs to be reversed
   if v.collectdType == 1 {
     for i, j := 0, len(b)-1; i < j; i, j = i+1, j-1 {
-        b[i], b[j] = b[j], b[i]
+      b[i], b[j] = b[j], b[i]
     }
   }
   return b
@@ -91,11 +91,11 @@ func (v collectdValue) Type() (r valueType) {
 
 type uint64Value uint64
 
-func (v uint64Value) Float64Value() (float64Value) {
+func (v uint64Value) Float64Value() float64Value {
   return float64Value(v)
 }
 
-func (v uint64Value) Bytes() ([]byte) {
+func (v uint64Value) Bytes() []byte {
   b := new(bytes.Buffer)
   binary.Write(b, binary.BigEndian, v)
   return b.Bytes()
@@ -107,11 +107,11 @@ func (v uint64Value) Type() (r valueType) {
 
 type int64Value int64
 
-func (v int64Value) Float64Value() (float64Value) {
+func (v int64Value) Float64Value() float64Value {
   return float64Value(v)
 }
 
-func (v int64Value) Bytes() ([]byte) {
+func (v int64Value) Bytes() []byte {
   b := new(bytes.Buffer)
   binary.Write(b, binary.BigEndian, v)
   return b.Bytes()
@@ -123,11 +123,11 @@ func (v int64Value) Type() (r valueType) {
 
 type float64Value float64
 
-func (v float64Value) Float64Value() (float64Value) {
+func (v float64Value) Float64Value() float64Value {
   return v
 }
 
-func (v float64Value) Bytes() ([]byte) {
+func (v float64Value) Bytes() []byte {
   b := new(bytes.Buffer)
   binary.Write(b, binary.BigEndian, v)
   return b.Bytes()
@@ -140,7 +140,7 @@ func (v float64Value) Type() (r valueType) {
 type ValueSlice []Value
 
 // sort interface
-func (s ValueSlice) Len() int { 
+func (s ValueSlice) Len() int {
   return len(s)
 }
 
@@ -149,6 +149,6 @@ func (s ValueSlice) Less(i, j int) bool {
   return s[i].Float64Value() < s[j].Float64Value()
 }
 
-func (s ValueSlice) Swap(i, j int) { 
+func (s ValueSlice) Swap(i, j int) {
   s[i], s[j] = s[j], s[i]
 }

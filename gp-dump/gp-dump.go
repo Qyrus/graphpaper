@@ -19,13 +19,13 @@ func main() {
   fmt.Println(table.Columns())
 
   fmt.Printf("%19.19s", "local time")
-  for _,c := range table.Columns() {
+  for _, c := range table.Columns() {
     fmt.Printf("%10.10s ", c.StatisticalFunction)
   }
   fmt.Printf("\n")
   fmt.Printf("%19.19s", "")
-  for _,c := range table.Columns() {
-    fmt.Printf("%10.10s ", "(" + c.ValueType.String() + ")")
+  for _, c := range table.Columns() {
+    fmt.Printf("%10.10s ", "("+c.ValueType.String()+")")
   }
   fmt.Printf("\n")
 
@@ -35,7 +35,7 @@ func main() {
   for _, v := range data {
 
     fmt.Printf(graphpaper.FormatTime(v.NanoTime, false, "2006-01-02 15:04:05"))
-    for i,c := range table.Columns() {
+    for i, c := range table.Columns() {
       switch c.ValueType {
       case 1:
         fmt.Printf("%10d ", v.Values[i])

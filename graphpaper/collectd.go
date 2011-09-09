@@ -1,6 +1,6 @@
 package graphpaper
 
-import(
+import (
   "net"
   "os"
   "fmt"
@@ -11,9 +11,9 @@ import(
 // CollectdListener listens for data sent from collectd, parses it into
 // CollectdMeasurements, and sends those measurements to the channel.
 func CollectdListener(c NodeMetricMeasurementChannel) {
-  laddr, err := net.ResolveUDPAddr("udp","127.0.0.1:25827");
+  laddr, err := net.ResolveUDPAddr("udp", "127.0.0.1:25827")
   if err != nil { fmt.Println("Failed to resolve address", err); os.Exit(1); }
-  conn, err := net.ListenUDP("udp", laddr);
+  conn, err := net.ListenUDP("udp", laddr)
   if err != nil { fmt.Println("Failed to listen", err); os.Exit(1); }
   for {
     buf := make([]byte, 1452)
@@ -79,39 +79,39 @@ func collectdParse(channel NodeMetricMeasurementChannel, b []byte) {
     switch {
     case partType == 0:
       str := partBuffer.String()
-      hostname = str[0:len(str)-1]
+      hostname = str[0 : len(str)-1]
     case partType == 1:
       var timeSeconds int64
       binary.Read(partBuffer, binary.BigEndian, &timeSeconds)
       time = timeSeconds * 1000000000
     case partType == 2:
       str := partBuffer.String()
-      plugin = str[0:len(str)-1]
+      plugin = str[0 : len(str)-1]
     case partType == 3:
       str := partBuffer.String()
-      pluginInstance = str[0:len(str)-1]
+      pluginInstance = str[0 : len(str)-1]
     case partType == 4:
       str := partBuffer.String()
-      pluginType = str[0:len(str)-1]
+      pluginType = str[0 : len(str)-1]
     case partType == 5:
       str := partBuffer.String()
-      pluginTypeInstance = str[0:len(str)-1]
+      pluginTypeInstance = str[0 : len(str)-1]
     case partType == 6:
       var valueCount16 uint16
       binary.Read(partBuffer, binary.BigEndian, &valueCount16)
       valueCount := int(valueCount16)
 
-      for i:=0; i < valueCount; i++ {
+      for i := 0; i < valueCount; i++ {
 
         name := generateName(plugin, pluginInstance, pluginType, pluginTypeInstance, i)
-        
+
         // collectd's protocol puts things in a weird order.
         var valueType uint8
         binary.Read(partBuffer, binary.BigEndian, &valueType)
         valueBytes := make([]byte, 8, 8)
-        copy(valueBytes, partBytes[2 + valueCount + (i*8):2 + valueCount + 8 + (i*8)])
+        copy(valueBytes, partBytes[2+valueCount+(i*8):2+valueCount+8+(i*8)])
 
-        channel <- NodeMetricMeasurement{hostname, name, Measurement{ collectdValue{valueType, valueBytes}, time }}
+        channel <- NodeMetricMeasurement{hostname, name, Measurement{collectdValue{valueType, valueBytes}, time}}
         // messyness ends here
       }
     case partType == 7:
