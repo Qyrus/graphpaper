@@ -9,8 +9,8 @@ import (
 // todo: better name please!
 // todo: in the process of renaming, reconsider the interface between collectd and this queue
 type NodeMetricMeasurement struct {
-  Node   string
-  Metric string // todo: should be a type in itself?
+  Node   string // todo: should be a Node
+  Metric string // todo: should be a Metric or Property
   Measurement
 }
 

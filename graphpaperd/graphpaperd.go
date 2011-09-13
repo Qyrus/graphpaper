@@ -2,6 +2,7 @@ package main
 
 import (
   "graphpaper"
+  "graphpaper/web"
   goopt "github.com/droundy/goopt"
 )
 
@@ -18,6 +19,7 @@ func main() {
 
   go graphpaper.CollectdListener(mc)
   go graphpaper.FileWriter(mc)
+  go web.Server()
   graphpaper.Watch("./data/raw.1h")
 
   quit := make(chan bool)
