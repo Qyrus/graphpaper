@@ -3,6 +3,7 @@ package graphpaper
 import (
   "os"
   "fmt"
+  "log"
   "path/filepath"
   "time"
   "strings"
@@ -27,7 +28,9 @@ func (v visitor) VisitFile(path string, f *os.FileInfo) {
       node := dir
 
       rawfile, err := OpenFile(path)
-      if err != nil { fmt.Println("Failed to open file", err); os.Exit(1); }
+      if err != nil {
+        log.Fatalln("fatal: Failed to open file", err)
+      }
       defer rawfile.Close()
 
       list, err := rawfile.ReadRawMeasurements()
@@ -40,7 +43,9 @@ func (v visitor) VisitFile(path string, f *os.FileInfo) {
         date := time.SecondsToUTC(seconds).Format("2006-01-02")
         filename := fmt.Sprintf("data/5m.1d/%s/%s/%s.gpr", date, node, metric)
         file, err := CreateOrOpenFile(filename, summary.ValueType, start, 5*60*1000000000, summary.Functions)
-        if err != nil { fmt.Println("Failed to open file", err); os.Exit(1); }
+        if err != nil {
+          log.Fatalln("fatal: Failed to open file", err)
+        }
         defer file.Close()
 
         file.WriteSummary(s)

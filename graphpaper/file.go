@@ -191,7 +191,6 @@ func (r *File) WriteSummary(s Summary) (err os.Error) {
     }
 
     offset := r.TimeOffset(start)
-    // fmt.Println("values", values, b.Bytes())
     _, err := r.WriteAt(b.Bytes(), offset)
     // todo: check we've written the whole thing
     _ = err //todo: check error
@@ -233,7 +232,6 @@ func (r *File) ReadRawMeasurements() (l *MeasurementList, e os.Error) {
         return nil, err
       }
       ml = append(ml, Measurement{v, t})
-      //fmt.Println(t, v)
     default:
       return nil, err
     }

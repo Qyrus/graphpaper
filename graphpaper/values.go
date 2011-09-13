@@ -6,6 +6,7 @@ import (
   "io"
   "os"
   "fmt"
+  "log"
 )
 
 type Value interface {
@@ -60,7 +61,9 @@ type collectdValue struct {
 func (v collectdValue) Float64Value() float64Value {
   b := bytes.NewBuffer(v.Bytes())
   f, err := ReadValue(v.Type(), b)
-  if err != nil { fmt.Println("Failed read value", err); os.Exit(1); }
+  if err != nil {
+    log.Fatalln("fatal: Failed to convert value", err)
+  }
   return f.Float64Value()
 }
 

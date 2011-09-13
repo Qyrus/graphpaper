@@ -2,8 +2,8 @@ package graphpaper
 
 import (
   "net"
-  "os"
   "fmt"
+  "log"
   "bytes"
   "encoding/binary"
 )
@@ -12,14 +12,21 @@ import (
 // CollectdMeasurements, and sends those measurements to the channel.
 func CollectdListener(c NodeMetricMeasurementChannel) {
   laddr, err := net.ResolveUDPAddr("udp", "127.0.0.1:25827")
-  if err != nil { fmt.Println("Failed to resolve address", err); os.Exit(1); }
+  if err != nil {
+    log.Fatalln("fatal: failed to resolve address", err)
+  }
   conn, err := net.ListenUDP("udp", laddr)
-  if err != nil { fmt.Println("Failed to listen", err); os.Exit(1); }
+  if err != nil {
+    log.Fatalln("fatal: failed to listen", err)
+  }
   for {
     buf := make([]byte, 1452)
     n, err := conn.Read(buf[:])
-    if err != nil { fmt.Println("Failed to recieve packet", err); os.Exit(1); }
-    collectdParse(c, buf[0:n])
+    if err != nil {
+      log.Println("error: Failed to recieve packet", err)
+    } else {
+      collectdParse(c, buf[0:n])
+    }
   }
 }
 

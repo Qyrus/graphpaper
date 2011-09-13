@@ -1,9 +1,9 @@
 package graphpaper
 
 import (
-  "os"
   "fmt"
   "time"
+  "log"
 )
 
 // todo: better name please!
@@ -19,7 +19,6 @@ type NodeMetricMeasurementChannel chan NodeMetricMeasurement
 func (m *NodeMetricMeasurement) filename() string {
   // todo: sanity check node name and metric name before using them in the filesystem
   seconds := m.NanoTime / 1000000000
-  fmt.Println(seconds, m.NanoTime)
   date := time.SecondsToUTC(seconds).Format("2006-01-02-15")
   return fmt.Sprintf("data/raw.1h/%s/%s/%s.gpr", date, m.Node, m.Metric)
 }
@@ -87,14 +86,19 @@ func writeMeasurement(filename string, l []Measurement) {
   if len(l) > 0 {
     first := l[0]
     valueType := first.Value.Type()
-    fmt.Println("opening", valueType, filename)
+    if Debug {
+      log.Printf("debug: opening %s for %v values", filename, valueType)
+    }
     rawfile, err := CreateOrOpenFile(filename, valueType, 0, 0, 0)
-    fmt.Println("done opening", valueType, filename)
-    if err != nil { fmt.Println("Failed to open file", err); os.Exit(1); }
+    if err != nil {
+      log.Fatalln("fatal: Failed to open file", err)
+    }
     defer rawfile.Close()
 
     err = rawfile.appendRawMeasurements(l)
-    if err != nil { fmt.Println("Failed to write measurements", err); os.Exit(1); }
+    if err != nil {
+      log.Fatalln("fatal: Failed to write measurements", err)
+    }
   }
 }
 
