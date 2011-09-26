@@ -27,6 +27,7 @@ func render(ctx *web.Context, templateName string, data interface{}) {
 func Server() {
   web.Get("/", index)
   web.Get("/n/([^/]+)", node)
+  web.Get("/n/([^/]+)/([^/]+).png", graph)
 
   web.Run("0.0.0.0:9999")
 }
