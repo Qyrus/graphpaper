@@ -13,15 +13,18 @@ patterns in the resulting aggregated data.
 
 # Installing
 
-These instructions are deliberately obtuse. Graphpaper doesn't even qualify as
+These instructions are deliberately obtuse; Graphpaper doesn't even qualify as
 alpha software yet and you really shouldn't be installing it unless you know
 what you're doing.
 
 Graphpaper is written in Go. You'll need to install release 59 of Go, along
 with the following packages:
 
+  * github.com/hoisie/web.go
+  * github.com/hoisie/mustache.go
   * github.com/skelterjohn/go-gb/gb
   * github.com/droundy/goopt
+  * draw2d.googlecode.com/hg/draw2d (you'll need "tip" and not "release")
 
 From there running `$GOBIN/gb` should compile everything, but don't be
 surprised if it doesn't.
