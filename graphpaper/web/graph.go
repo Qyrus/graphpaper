@@ -16,7 +16,7 @@ func graph(ctx *web.Context, nodename string, property string) {
     return
   }
 
-  table, err := m.GetMeasurements(time.Seconds())
+  table, err := m.GetMeasurements(time.Seconds() - 3600, time.Seconds())
   if err != nil {
     log.Println("error: failed to fetch metrics", err)
     ctx.Abort(500, "Error")
@@ -24,7 +24,7 @@ func graph(ctx *web.Context, nodename string, property string) {
   }
 
   ctx.SetHeader("Content-type", "image/png", true)
-  err = graphpaper.DrawGraph(ctx, table)
+  err = graphpaper.DrawTable(ctx, table)
   if err != nil {
     log.Println("error: failed to draw graph", err)
     ctx.Abort(500, "Error")

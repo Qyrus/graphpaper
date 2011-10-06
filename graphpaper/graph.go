@@ -9,31 +9,26 @@ import (
   draw2d "draw2d.googlecode.com/hg/draw2d"
 )
 
-// DrawGraph draws a graph of the measurements as a PNG file and writes it to w.
-func DrawGraph(w io.Writer, t Table) os.Error {
+func DrawTable(w io.Writer, t DataTable) os.Error {
 
-  var minDate int64
-  var maxDate int64
   var minVal float64
   var maxVal float64
 
-  for _, m := range t.Data() {
-    if (minDate == 0 || m.NanoTime < minDate) { minDate = m.NanoTime }
-    if (m.NanoTime > maxDate) { maxDate = m.NanoTime }
-    f64 := float64(m.Values[0].Float64Value())
+  for _, v := range t.Values {
+    f64 := float64(v.Float64Value())
     minVal = math.Fmin(minVal, f64)
     maxVal = math.Fmax(maxVal, f64)
   }
 
   i := image.NewNRGBA(150, 100)
   gc := draw2d.NewGraphicContext(i)
-  dx := 150 / (float64(maxDate) - float64(minDate))
-  dy := 100 / (maxVal - minVal)
+  dx := 149 / (float64(t.End) - float64(t.Start))
+  dy := 99 / (maxVal - minVal)
 
   gc.SetLineWidth(1)
-  for _,m := range t.Data() {
-    x := dx * float64(m.NanoTime - minDate)
-    y := dy * (float64(m.Values[0].Float64Value()) - minVal)
+  for i, v := range t.Values {
+    x := dx * float64(int64(i) * t.Resolution)
+    y := dy * (float64(v.Float64Value()) - minVal)
     gc.MoveTo(x+0.45,y+0.5)
     gc.ArcTo(x+0.5,y+0.5,0.1,0.1,0,-math.Pi*2)
     gc.Stroke()

@@ -239,7 +239,7 @@ func (r *File) ReadRawMeasurements() (l *MeasurementList, e os.Error) {
   panic("unreachable code")
 }
 
-func (r *File) readAggregatedMeasurements() (s Summary, e os.Error) {
+func (r *File) ReadAggregatedMeasurements() (s Summary, e os.Error) {
   s = Summary{r.ValueType, r.Functions, r.Resolution, map[int64][]Value{}}
 
   columns := r.columnTypes()
@@ -264,7 +264,7 @@ func (r *File) ReadMeasurements() (Table, os.Error) {
     list, err := r.ReadRawMeasurements()
     return list, err
   } else {
-    summary, err := r.readAggregatedMeasurements()
+    summary, err := r.ReadAggregatedMeasurements()
     return summary, err
   }
   panic("unreachable code")
