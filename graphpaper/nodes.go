@@ -15,6 +15,18 @@ func (n Node) String() string {
   return n.Name
 }
 
+// todo: this should accept some notion of resolution
+func (m Metric) GetMeasurements(t int64) (table Table, err os.Error){
+
+  file, err := m.file(t)
+  if err != nil {
+    return nil, err
+  }
+
+  table, err = file.ReadMeasurements()
+  return table, err
+}
+
 type Property string
 
 type Metric struct {
@@ -22,7 +34,12 @@ type Metric struct {
   Property
 }
 
-func (m Metric) File(t int64) (f *File, err os.Error) {
+func GetMetric(n string, p string) (m Metric, err os.Error){
+  // todo: this should check if the node actually has that metric
+  return Metric{Node{n}, Property(p)}, nil
+}
+
+func (m Metric) file(t int64) (f *File, err os.Error) {
   // todo: this should take resolution as an argument
   date := time.SecondsToUTC(t).Format("2006-01-02-15")
   name := fmt.Sprintf("data/raw.1h/%s/%s/%s.gpr", date, m.Node, m.Property)
