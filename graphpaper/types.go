@@ -166,29 +166,3 @@ func (s Summary) Bucketize(capacity int64) (l map[int64]Summary) {
   }
   return l
 }
-
-func (s Summary) DataTable(m Metric) (t DataTable) {
-  // todo: this doesn't take into account missing values in s.Intervals
-  columns := s.Columns()
-  dataSize := len(columns) * len(s.Intervals)
-  values := make([]Value, dataSize)
-  definitions := make([]LineDefinition, len(columns))
-  for i, c := range columns {
-    definitions[i] = LineDefinition{m.Node, m.Property, c.StatisticalFunction, c.ValueType}
-  }
-  i := 0
-  var minDate int64
-  var maxDate int64
-
-  for time, l := range s.Intervals {
-    for j, v := range l {
-      // todo: this assumes the data is coming in already ordered. that should be documented somewhere
-      values[i * len(columns) + j] = v
-    }
-    i++
-    if (minDate == 0 || time < minDate) { minDate = time }
-    if (time> maxDate) { maxDate = time }
-  }
-
-  return DataTable{minDate, maxDate, s.Resolution, definitions, values}
-}

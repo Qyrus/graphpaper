@@ -16,7 +16,7 @@ func graph(ctx *web.Context, nodename string, property string) {
     return
   }
 
-  table, err := m.GetMeasurements(time.Seconds() - 3600, time.Seconds())
+  table, err := m.GetMeasurements(time.Seconds() - 86400, time.Seconds())
   if err != nil {
     log.Println("error: failed to fetch metrics", err)
     ctx.Abort(500, "Error")

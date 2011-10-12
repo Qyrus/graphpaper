@@ -239,6 +239,30 @@ func (r *File) ReadRawMeasurements() (l *MeasurementList, e os.Error) {
   panic("unreachable code")
 }
 
+func (r *File) ReadAggregatedDataTable(m Metric) (t DataTable, e os.Error) {
+  columns := r.Columns()
+  dataSize := len(columns) * 288 // 288 = 1d/5m and todo: shouldn't be hardcoded
+  start := r.StartTime
+  end := r.StartTime + 86400000000000 // todo: don't hardcode
+  values := make([]Value, dataSize)
+  definitions := make([]LineDefinition, len(columns))
+  for i, c := range columns {
+    definitions[i] = LineDefinition{m.Node, m.Property, c.StatisticalFunction, c.ValueType}
+  }
+
+  columnTypes := r.columnTypes()
+  for i := 0; ; i++ {
+    for j, c := range columnTypes {
+      v, err := ReadValue(c, r)
+      if err == os.EOF {
+        return DataTable{start, end, r.Resolution, definitions, values}, nil
+      }
+      values[i * len(columnTypes) + j] = v
+    }
+  }
+  panic("unreachable code")
+}
+
 func (r *File) ReadAggregatedMeasurements() (s Summary, e os.Error) {
   s = Summary{r.ValueType, r.Functions, r.Resolution, map[int64][]Value{}}
 

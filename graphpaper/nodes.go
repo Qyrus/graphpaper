@@ -26,6 +26,10 @@ func (d LineDefinition) String() string {
   return d.Node.Name + string(d.Property) + d.StatisticalFunction.String()
 }
 
+func (d LineDefinition) Equals(n LineDefinition) bool {
+  return d.Node.Name == n.Node.Name && d.Property == n.Property && d.StatisticalFunction == n.StatisticalFunction && d.ValueType == n.ValueType 
+}
+
 func (t DataTable) size() int {
   return len(t.Values) / len(t.LineDefinitions)
 }
@@ -41,6 +45,24 @@ func (t DataTable) Columnify(i int) (r DataTable) {
   return DataTable{t.Start, t.End, t.Resolution, definitions, data}
 }
 
+func (t *DataTable) Append(n *DataTable) (r *DataTable, err os.Error) {
+  if t.Resolution != n.Resolution {
+    return nil, os.NewError("Resolutions don't match")
+  }
+  for i, d := range(t.LineDefinitions) {
+    if !d.Equals(n.LineDefinitions[i]) {
+      return nil, os.NewError("Line definitions don't match")
+    }
+  }
+  // todo: should handle gaps between data and/or overlaps. For now we'll skip that, but we shouldn't.
+  if t.Start >= n.End {
+    return nil, os.NewError("DataTable date calculations are unimplemented")
+  }
+  data := append(t.Values, n.Values...)
+  r = &DataTable{t.Start, n.End, t.Resolution, t.LineDefinitions, data}
+  return r, nil
+}
+
 type Node struct {
   Name string
 }
@@ -50,23 +72,37 @@ func (n Node) String() string {
 }
 
 // todo: this should accept some notion of resolution
-func (m Metric) GetMeasurements(start int64, end int64) (table DataTable, err os.Error){
+func (m Metric) GetMeasurements(start int64, end int64) (table *DataTable, err os.Error){
 
   i := end
+  tables := []*DataTable{}
   for i > start {
     file, err := m.file(i)
     if err == nil {
       defer file.Close()
-      summary, err := file.ReadAggregatedMeasurements()
-      // todo: don't hardcode a 1 here
-      table = summary.DataTable(m).Columnify(1)
-      // todo: do something with err here
-      _ = err
-      i = (file.StartTime / 1000000000) - 1
+      fullTable, err := file.ReadAggregatedDataTable(m)
+      if err == nil {
+        // todo: don't hardcode a 1 here
+        table := fullTable.Columnify(1)
+        tables = append(tables, &table)
+      }
     }
+    i = (file.StartTime / 1000000000) - 1
   }
 
-  return table, err
+  if len(tables) == 0 {
+    return nil, err
+  }
+  r := tables[0]
+  for i, t := range(tables) {
+    if (i > 0) {
+      r, err = t.Append(r)
+      if err != nil {
+        return nil, err
+      }
+    }
+  }
+  return r, nil
 }
 
 type Property string
