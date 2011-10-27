@@ -40,9 +40,7 @@ func (v visitor) VisitFile(path string, f *os.FileInfo) {
         b := s.Bucketize(fc.Size)
 
         for start, summary := range b {
-          seconds := start / 1000000000
-
-          date := time.SecondsToUTC(seconds).Format(fc.DateFmt)
+          date := FormatTime(start, true, fc.DateFmt)
           filename := fmt.Sprintf("data/%s/%s/%s/%s.gpr", fc.Name, date, node, metric)
           file, err := CreateOrOpenFile(filename, summary.ValueType, start, fc.Resolution, summary.Functions)
           if err != nil {
