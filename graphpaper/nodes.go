@@ -74,10 +74,11 @@ func (n Node) String() string {
 // todo: this should accept some notion of resolution
 func (m Metric) GetMeasurements(start int64, end int64) (table *DataTable, err os.Error){
 
-  i := end
   tables := []*DataTable{}
-  for i > start {
-    file, err := m.file(i)
+
+  names := m.filenames(start * 1000000000, end * 1000000000)
+  for _, name := range names {
+    file, err := OpenFile(name)
     if err == nil {
       defer file.Close()
       fullTable, err := file.ReadAggregatedDataTable(m)
@@ -87,9 +88,7 @@ func (m Metric) GetMeasurements(start int64, end int64) (table *DataTable, err o
         tables = append(tables, &table)
       }
     }
-    i = (file.StartTime / 1000000000) - 1
   }
-
   if len(tables) == 0 {
     return nil, err
   }
@@ -115,6 +114,19 @@ type Metric struct {
 func GetMetric(n string, p string) (m Metric, err os.Error){
   // todo: this should check if the node actually has that metric
   return Metric{Node{n}, Property(p)}, nil
+}
+
+func (m Metric) filenames(start int64, end int64) ([]string) {
+  // todo: should take resolution as an argument
+  fc := Config.Resolutions[0]
+  filenames := make([]string, 0)
+  i := start - (start % fc.Size)
+  for (i < end) {
+    date := FormatTime(i, true, fc.DateFmt)
+    filenames = append(filenames, fmt.Sprintf("data/%s/%s/%s/%s.gpr", fc.Name, date, m.Node, m.Property))
+    i += fc.Size
+  }
+  return filenames
 }
 
 func (m Metric) file(t int64) (f *File, err os.Error) {
