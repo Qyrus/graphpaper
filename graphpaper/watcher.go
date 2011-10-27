@@ -34,22 +34,24 @@ func (v visitor) VisitFile(path string, f *os.FileInfo) {
       defer rawfile.Close()
 
       list, err := rawfile.ReadRawMeasurements()
-      s := Aggregate(list, 5*60*1000000000, 63)
-      b := s.Bucketize(24 * 60 * 60 * 1000000000)
 
-      for start, summary := range b {
-        seconds := start / 1000000000
+      for _, fc := range Config.Resolutions {
+        s := Aggregate(list, fc.Resolution, 63)
+        b := s.Bucketize(fc.Size)
 
-        date := time.SecondsToUTC(seconds).Format("2006-01-02")
-        filename := fmt.Sprintf("data/5m.1d/%s/%s/%s.gpr", date, node, metric)
-        file, err := CreateOrOpenFile(filename, summary.ValueType, start, 5*60*1000000000, summary.Functions)
-        if err != nil {
-          log.Fatalln("fatal: Failed to open file", err)
+        for start, summary := range b {
+          seconds := start / 1000000000
+
+          date := time.SecondsToUTC(seconds).Format(fc.DateFmt)
+          filename := fmt.Sprintf("data/%s/%s/%s/%s.gpr", fc.Name, date, node, metric)
+          file, err := CreateOrOpenFile(filename, summary.ValueType, start, fc.Resolution, summary.Functions)
+          if err != nil {
+            log.Fatalln("fatal: Failed to open file", err)
+          }
+          defer file.Close()
+
+          file.WriteSummary(s)
         }
-        defer file.Close()
-
-        file.WriteSummary(s)
-
       }
     }
 
