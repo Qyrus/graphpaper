@@ -129,13 +129,6 @@ func (m Metric) filenames(start int64, end int64) ([]string) {
   return filenames
 }
 
-func (m Metric) file(t int64) (f *File, err os.Error) {
-  // todo: this should take resolution as an argument
-  date := time.SecondsToUTC(t).Format("2006-01-02")
-  name := fmt.Sprintf("data/5m.1d/%s/%s/%s.gpr", date, m.Node, m.Property)
-  return OpenFile(name)
-}
-
 func MetricList(t int64, n Node) (l *[]Metric, err os.Error) {
   // todo: dedupe this, move file path operations into shared code
   date := time.SecondsToUTC(t).Format("2006-01-02")
