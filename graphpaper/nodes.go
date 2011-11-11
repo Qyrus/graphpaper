@@ -71,6 +71,37 @@ func (n Node) String() string {
   return n.Name
 }
 
+func (n Node) Metrics(start int64, end int64) (l *[]Metric, err os.Error) {
+  // todo: should take resolution as an argument
+  fc := Config.Resolutions[0]
+  i := start - (start % fc.Size)
+  properties := map[string]bool{}
+  for (i < end) {
+    date := FormatTime(i, true, fc.DateFmt)
+    i += fc.Size
+
+    glob := fmt.Sprintf("data/%s/%s/%s/*.gpr", fc.Name, date, n.Name)
+    files, err :=  filepath.Glob(glob)
+    if err != nil {
+      return nil, err
+    }
+    for _, f := range files {
+      base := filepath.Base(f)
+      property := base[:(len(base) - 4)]
+      properties[property] = true
+    }
+  }
+
+  metrics := make([]Metric, len(properties))
+  j := 0
+  for property,_ := range properties {
+    metrics[j] = Metric{n, Property(property)}
+    j++
+  }
+  return &metrics, nil
+}
+
+
 // todo: this should accept some notion of resolution
 func (m Metric) GetMeasurements(start int64, end int64) (table *DataTable, err os.Error){
 
@@ -127,24 +158,6 @@ func (m Metric) filenames(start int64, end int64) ([]string) {
     i += fc.Size
   }
   return filenames
-}
-
-func MetricList(t int64, n Node) (l *[]Metric, err os.Error) {
-  // todo: dedupe this, move file path operations into shared code
-  date := time.SecondsToUTC(t).Format("2006-01-02")
-  glob := fmt.Sprintf("data/5m.1d/%s/%s/*.gpr", date, n.Name)
-  // todo: notion of data dir?
-  files, err := filepath.Glob(glob)
-  if err != nil {
-    return nil, err
-  }
-  metrics := make([]Metric, len(files))
-  for i, f := range files {
-    base := filepath.Base(f)
-    property := base[:(len(base) - 4)]
-    metrics[i] = Metric{n, Property(property)}
-  }
-  return &metrics, nil
 }
 
 func NodeList(t int64) (r *[]Node, err os.Error) {
