@@ -32,13 +32,12 @@ func DrawTable(w io.Writer, t *DataTable) os.Error {
     if v == nil {
       continue
     }
-    x := dx * float64(int64(i) * t.Resolution)
+    x := dx * float64(int64(i)*t.Resolution)
     y := dy * (float64(v.Float64Value()) - minVal)
-    gc.MoveTo(x+0.45,y+0.5)
-    gc.ArcTo(x+0.5,y+0.5,0.1,0.1,0,-math.Pi*2)
+    gc.MoveTo(x+0.45, y+0.5)
+    gc.ArcTo(x+0.5, y+0.5, 0.1, 0.1, 0, -math.Pi*2)
     gc.Stroke()
   }
 
   return png.Encode(w, i)
 }
-

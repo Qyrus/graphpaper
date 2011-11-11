@@ -76,17 +76,17 @@ func (f *fileHeader) columnTypes() []valueType {
 func (f *fileHeader) Columns() []ColumnType {
   if f.IsRaw() {
     return []ColumnType{
-      ColumnType{rawFunc, f.ValueType},
+      {rawFunc, f.ValueType},
     }
   } else {
     // Todo: for now we assume functions == 63. Fix that.
     return []ColumnType{
-      ColumnType{countFunc, int64Type},
-      ColumnType{minFunc, f.ValueType},
-      ColumnType{maxFunc, f.ValueType},
-      ColumnType{sumFunc, float64Type},
-      ColumnType{meanFunc, float64Type},
-      ColumnType{medianFunc, f.ValueType},
+      {countFunc, int64Type},
+      {minFunc, f.ValueType},
+      {maxFunc, f.ValueType},
+      {sumFunc, float64Type},
+      {meanFunc, float64Type},
+      {medianFunc, f.ValueType},
     }
   }
   panic("unreachable code")
@@ -257,7 +257,7 @@ func (r *File) ReadAggregatedDataTable(m Metric) (t DataTable, e os.Error) {
       if err == os.EOF {
         return DataTable{start, end, r.Resolution, definitions, values}, nil
       }
-      values[i * len(columnTypes) + j] = v
+      values[i*len(columnTypes)+j] = v
     }
   }
   panic("unreachable code")

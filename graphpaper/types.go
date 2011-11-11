@@ -78,7 +78,7 @@ func (l MeasurementList) Columns() []ColumnType {
   // Todo: fix the assumption that all measurements are the same type
   // Todo: fix assumption that a measurement list has at least one element
   return []ColumnType{
-    ColumnType{rawFunc, l[0].Value.Type()},
+    {rawFunc, l[0].Value.Type()},
   }
 }
 
@@ -142,12 +142,12 @@ func (s Summary) Data() (d TimeSpliceSlice) {
 func (s Summary) Columns() []ColumnType {
   // Todo: for now we assume functions == 63. Fix that.
   return []ColumnType{
-    ColumnType{countFunc, int64Type},
-    ColumnType{minFunc, s.ValueType},
-    ColumnType{maxFunc, s.ValueType},
-    ColumnType{sumFunc, float64Type},
-    ColumnType{meanFunc, float64Type},
-    ColumnType{medianFunc, s.ValueType},
+    {countFunc, int64Type},
+    {minFunc, s.ValueType},
+    {maxFunc, s.ValueType},
+    {sumFunc, float64Type},
+    {meanFunc, float64Type},
+    {medianFunc, s.ValueType},
   }
 }
 

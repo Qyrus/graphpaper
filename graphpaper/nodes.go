@@ -8,11 +8,11 @@ import (
 )
 
 type DataTable struct {
-  Start int64
-  End int64
-  Resolution int64
+  Start           int64
+  End             int64
+  Resolution      int64
   LineDefinitions []LineDefinition
-  Values []Value
+  Values          []Value
 }
 
 type LineDefinition struct {
@@ -27,7 +27,7 @@ func (d LineDefinition) String() string {
 }
 
 func (d LineDefinition) Equals(n LineDefinition) bool {
-  return d.Node.Name == n.Node.Name && d.Property == n.Property && d.StatisticalFunction == n.StatisticalFunction && d.ValueType == n.ValueType 
+  return d.Node.Name == n.Node.Name && d.Property == n.Property && d.StatisticalFunction == n.StatisticalFunction && d.ValueType == n.ValueType
 }
 
 func (t DataTable) size() int {
@@ -36,11 +36,11 @@ func (t DataTable) size() int {
 
 // todo: maybe this should take a named index not a numeric one?
 func (t DataTable) Columnify(i int) (r DataTable) {
-  definitions := t.LineDefinitions[i:i+1]
+  definitions := t.LineDefinitions[i : i+1]
   defLen := len(t.LineDefinitions)
   data := make([]Value, t.size())
-  for j, _ := range data {
-    data[j] = t.Values[i + (j * defLen)]
+  for j := range data {
+    data[j] = t.Values[i+(j*defLen)]
   }
   return DataTable{t.Start, t.End, t.Resolution, definitions, data}
 }
@@ -49,7 +49,7 @@ func (t *DataTable) Append(n *DataTable) (r *DataTable, err os.Error) {
   if t.Resolution != n.Resolution {
     return nil, os.NewError("Resolutions don't match")
   }
-  for i, d := range(t.LineDefinitions) {
+  for i, d := range t.LineDefinitions {
     if !d.Equals(n.LineDefinitions[i]) {
       return nil, os.NewError("Line definitions don't match")
     }
@@ -76,12 +76,12 @@ func (n Node) Metrics(start int64, end int64) (l *[]Metric, err os.Error) {
   fc := Config.Resolutions[0]
   i := start - (start % fc.Size)
   properties := map[string]bool{}
-  for (i < end) {
+  for i < end {
     date := FormatTime(i, true, fc.DateFmt)
     i += fc.Size
 
     glob := fmt.Sprintf("data/%s/%s/%s/*.gpr", fc.Name, date, n.Name)
-    files, err :=  filepath.Glob(glob)
+    files, err := filepath.Glob(glob)
     if err != nil {
       return nil, err
     }
@@ -94,7 +94,7 @@ func (n Node) Metrics(start int64, end int64) (l *[]Metric, err os.Error) {
 
   metrics := make([]Metric, len(properties))
   j := 0
-  for property,_ := range properties {
+  for property := range properties {
     metrics[j] = Metric{n, Property(property)}
     j++
   }
@@ -103,11 +103,11 @@ func (n Node) Metrics(start int64, end int64) (l *[]Metric, err os.Error) {
 
 
 // todo: this should accept some notion of resolution
-func (m Metric) GetMeasurements(start int64, end int64) (table *DataTable, err os.Error){
+func (m Metric) GetMeasurements(start int64, end int64) (table *DataTable, err os.Error) {
 
   tables := []*DataTable{}
 
-  names := m.filenames(start * 1000000000, end * 1000000000)
+  names := m.filenames(start*1000000000, end*1000000000)
   for _, name := range names {
     file, err := OpenFile(name)
     if err == nil {
@@ -124,8 +124,8 @@ func (m Metric) GetMeasurements(start int64, end int64) (table *DataTable, err o
     return nil, err
   }
   r := tables[0]
-  for i, t := range(tables) {
-    if (i > 0) {
+  for i, t := range tables {
+    if i > 0 {
       r, err = t.Append(r)
       if err != nil {
         return nil, err
@@ -142,17 +142,17 @@ type Metric struct {
   Property
 }
 
-func GetMetric(n string, p string) (m Metric, err os.Error){
+func GetMetric(n string, p string) (m Metric, err os.Error) {
   // todo: this should check if the node actually has that metric
   return Metric{Node{n}, Property(p)}, nil
 }
 
-func (m Metric) filenames(start int64, end int64) ([]string) {
+func (m Metric) filenames(start int64, end int64) []string {
   // todo: should take resolution as an argument
   fc := Config.Resolutions[0]
   filenames := make([]string, 0)
   i := start - (start % fc.Size)
-  for (i < end) {
+  for i < end {
     date := FormatTime(i, true, fc.DateFmt)
     filenames = append(filenames, fmt.Sprintf("data/%s/%s/%s/%s.gpr", fc.Name, date, m.Node, m.Property))
     i += fc.Size
