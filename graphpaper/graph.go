@@ -22,7 +22,7 @@ func DrawTable(w io.Writer, t *DataTable) os.Error {
     }
   }
 
-  i := image.NewNRGBA(150, 100)
+  i := image.NewRGBA(150, 100)
   gc := draw2d.NewGraphicContext(i)
   dx := 149 / (float64(t.End) - float64(t.Start))
   dy := 99 / (maxVal - minVal)
