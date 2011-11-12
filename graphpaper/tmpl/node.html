@@ -1,0 +1,9 @@
+<h1>{{.Node}}</h1>
+<br style="clear:both">
+
+{{range .Metrics}}
+<div style="border:1px solid #ddd; float:left">
+{{.Property}}
+<br><img src = "/n/{{.Node}}/{{.Property}}.png">
+</div>
+{{end}}

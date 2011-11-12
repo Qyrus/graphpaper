@@ -18,6 +18,6 @@ func node(ctx *web.Context, nodename string) {
       graphpaper.Node
       Metrics *[]graphpaper.Metric
     }{n, metrics}
-    render(ctx, "node", data)
+    render(ctx, "node.html", data)
   }
 }

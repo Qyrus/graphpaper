@@ -2,26 +2,19 @@ package web
 
 import (
   web "github.com/hoisie/web.go"
-  mustache "github.com/hoisie/mustache.go"
-  "path/filepath"
-  "os"
-  "fmt"
   "log"
+  "template"
 )
 
 func render(ctx *web.Context, templateName string, data interface{}) {
-  // todo: validate template name?
-  templatePath := fmt.Sprintf("templates/%s.mustache", templateName)
-  templateFullPath := filepath.Join(os.Getenv("PWD"), templatePath)
-  template, err := mustache.ParseFile(templateFullPath)
-
+  err := templates.Execute(ctx, templateName, data)
   if err != nil {
     log.Println("error:", err)
     ctx.Abort(500, "Error parsing template")
-  } else {
-    ctx.WriteString(template.Render(data))
   }
 }
+
+var templates = template.SetMust(template.ParseTemplateGlob("graphpaper/tmpl/*"))
 
 // WebServer is the bare minimum web ui to show that the graphs are recoding data.
 func Server() {

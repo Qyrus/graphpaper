@@ -21,7 +21,6 @@ Graphpaper is written in Go. You'll need to install release 60.3 of Go, along
 with the following packages:
 
   * github.com/hoisie/web.go
-  * github.com/hoisie/mustache.go
   * github.com/skelterjohn/go-gb/gb
   * github.com/droundy/goopt
   * freetype-go.googlecode.com/hg/freetype (you'll need "release")

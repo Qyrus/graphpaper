@@ -14,6 +14,6 @@ func index(ctx *web.Context) {
     ctx.Abort(500, "Error")
   } else {
     data := struct{ Nodes *[]graphpaper.Node }{nodes}
-    render(ctx, "index", data)
+    render(ctx, "index.html", data)
   }
 }
