@@ -9,7 +9,7 @@ import (
   draw2d "draw2d.googlecode.com/hg/draw2d"
 )
 
-func DrawTable(w io.Writer, t *DataTable) os.Error {
+func DrawTable(r io.Writer, t *DataTable, w uint, h uint) os.Error {
 
   var minVal float64
   var maxVal float64
@@ -22,10 +22,10 @@ func DrawTable(w io.Writer, t *DataTable) os.Error {
     }
   }
 
-  i := image.NewRGBA(150, 100)
+  i := image.NewRGBA(int(w), int(h))
   gc := draw2d.NewGraphicContext(i)
-  dx := 149 / (float64(t.End) - float64(t.Start))
-  dy := 99 / (maxVal - minVal)
+  dx := float64(w-1) / (float64(t.End) - float64(t.Start))
+  dy := float64(h-1) / (maxVal - minVal)
 
   gc.SetLineWidth(1)
   for i, v := range t.Values {
@@ -39,5 +39,5 @@ func DrawTable(w io.Writer, t *DataTable) os.Error {
     gc.Stroke()
   }
 
-  return png.Encode(w, i)
+  return png.Encode(r, i)
 }

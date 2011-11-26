@@ -28,7 +28,8 @@ func Server() {
   web.Config.StaticDir = "graphpaper/static"
   web.Get("/", index)
   web.Get("/n/([^/]+)", node)
-  web.Get("/n/([^/]+)/([^/]+).png", graph)
+  web.Get("/n/([^/]+)/([^/]+)", metric)
+  web.Get("/n/([^/]+)/([^/]+)/([0-9]+)x([0-9]+).png", graph)
 
   web.Run("0.0.0.0:9999")
 }

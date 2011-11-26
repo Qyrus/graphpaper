@@ -11,7 +11,7 @@
     <div class="span16">
       <ul class="media-grid">
       {{range .Metrics}}
-        <a href="#">{{.Property}}<br><img src = "/n/{{.Node}}/{{.Property}}.png" width="210" height="90"></a>
+        <a href="/n/{{.Node}}/{{.Property}}">{{.Property}}<br><img src="/n/{{.Node}}/{{.Property}}/210x90.png" width="210" height="90"></a>
       {{end}}
       </ul>
     </div>
