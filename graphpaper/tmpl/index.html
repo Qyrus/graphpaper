@@ -1,4 +1,10 @@
-nodes!
-{{range .Nodes}}
-<a href="/n/{{.Name}}">{{.Name}}</a>
+{{define "head"}}
+  <title>Nodes!</title>
+{{end}}
+
+{{define "body"}}
+  nodes!
+  {{range .Nodes}}
+  <a href="/n/{{.Name}}">{{.Name}}</a>
+  {{end}}
 {{end}}

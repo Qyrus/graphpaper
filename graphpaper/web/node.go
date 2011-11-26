@@ -7,6 +7,8 @@ import (
   "log"
 )
 
+var nodeTemplate = parseTemplate("graphpaper/tmpl/node.html")
+
 func node(ctx *web.Context, nodename string) {
   n := graphpaper.Node{nodename} // todo: should be a real method
   metrics, err := n.Metrics(time.Nanoseconds()-(86400*1000000000), time.Nanoseconds())
@@ -18,6 +20,6 @@ func node(ctx *web.Context, nodename string) {
       graphpaper.Node
       Metrics *[]graphpaper.Metric
     }{n, metrics}
-    render(ctx, "node.html", data)
+    nodeTemplate.render(ctx, data)
   }
 }

@@ -1,3 +1,9 @@
+{{define "head"}}
+  <title>{{.Node}}</title>
+{{end}}
+
+{{define "body"}}
+
 <h1>{{.Node}}</h1>
 <br style="clear:both">
 
@@ -6,4 +12,6 @@
 {{.Property}}
 <br><img src = "/n/{{.Node}}/{{.Property}}.png">
 </div>
+{{end}}
+
 {{end}}

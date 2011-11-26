@@ -7,6 +7,8 @@ import (
   "log"
 )
 
+var indexTemplate = parseTemplate("graphpaper/tmpl/index.html")
+
 func index(ctx *web.Context) {
   nodes, err := graphpaper.NodeList(time.Seconds())
   if err != nil {
@@ -14,6 +16,6 @@ func index(ctx *web.Context) {
     ctx.Abort(500, "Error")
   } else {
     data := struct{ Nodes *[]graphpaper.Node }{nodes}
-    render(ctx, "index.html", data)
+    indexTemplate.render(ctx, data)
   }
 }
