@@ -25,6 +25,7 @@ func parseTemplate(file string) template {
 // WebServer is the bare minimum web ui to show that the graphs are recoding data.
 func Server() {
 
+  web.Config.StaticDir = "graphpaper/static"
   web.Get("/", index)
   web.Get("/n/([^/]+)", node)
   web.Get("/n/([^/]+)/([^/]+).png", graph)

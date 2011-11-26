@@ -2,10 +2,34 @@
 <html>
 
 <head>
+  <link rel="stylesheet" href="/css/bootstrap.css" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <!--[if lt IE 9]>
+    <script src="/js/html5.js"></script>
+  <![endif]-->
+
   {{ template "head" . }}
 </head>
 <body>
-  {{template "body" . }}
+
+  <div class="topbar">
+    <div class="fill">
+      <div class="container">
+        <a class="brand" href="/">Graphpaper</a>
+        <ul class="nav">
+          <li><a href="/">Home</a></li>
+          <li><a href="/n/">Nodes</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="content">
+      {{template "body" . }}
+    </div>
+    <!-- footer goes here -->
+  </div>
 </body>
 
 </html>
